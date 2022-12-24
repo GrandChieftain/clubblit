@@ -1,6 +1,6 @@
 import React from 'react';
 import './home.css';
-import Navigation from './Components/navigation.js';
+import Navigation from './navigation.js';
 //Importing route to link different pages together 
 // import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 
