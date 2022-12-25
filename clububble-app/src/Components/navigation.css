@@ -11,12 +11,13 @@
 }
 
 nav{
-    border: 5px solid black;
+    /* border: 5px solid black; */
     display: flex;
     position: sticky;
     top: 0;
     height: 80px;
     align-items: center;
+    background-color: white;
     
 }
 

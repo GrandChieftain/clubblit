@@ -11,3 +11,13 @@ body {
     font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
       monospace;
   }
+
+  :root{
+    --primary-color: #C9EAFD;
+    --secondary-color: #3283a8;
+  }
+
+  .home {
+    background-color: var(--primary-color); 
+    height: 100vh;
+  }
