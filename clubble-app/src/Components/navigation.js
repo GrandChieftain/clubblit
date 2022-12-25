@@ -11,7 +11,7 @@ export default function Navigation(){
 
     return (
     <nav>
-        <h1 className="title"><span className="clu">Clu</span>Bubble</h1>
+        <h1 className="title"><span className="club">Club</span>ble</h1>
         <ul>
             <li className="links">Home</li>
             <li className="links">About</li>
