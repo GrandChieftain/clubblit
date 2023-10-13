@@ -1,0 +1,26 @@
+import { UserButton, currentUser, clerkClient } from "@clerk/nextjs"
+
+export default async function Profile(){
+    const user = await currentUser();
+    const name = user?.firstName + ' ' + user?.lastName
+    const organizations = await clerkClient.organizations.getOrganizationList();
+    const currentOrgId = organizations[0].id
+    const memberships = await clerkClient.organizations.getOrganizationMembershipList({organizationId: currentOrgId});
+    const role = memberships[0].role === 'admin' ? "Admin" : "Member"
+
+    return (
+        <div className="border-black border-2 p-1 flex items-center gap-1">
+            <div className="labels flex flex-col items-center h-8">
+                <label className="text-xs font-semibold">{name}</label>
+                <label className="text-xs">{role}</label>
+            </div>
+            <UserButton afterSignOutUrl="/login" 
+                appearance={{
+                    elements: {
+                        userButtonTrigger: ''
+                    } 
+                }}
+            />
+        </div>
+    )
+}

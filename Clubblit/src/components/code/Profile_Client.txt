@@ -1,0 +1,32 @@
+"use client"
+
+import { UserButton, useUser, useOrganizationList } from "@clerk/nextjs"
+
+export default function Profile(){
+    
+    let name, role = ''
+
+    const { isSignedIn, user } = useUser();
+    if (isSignedIn) {
+        name = user.fullName
+    }
+    
+    const { orgRole } = useAuth();
+        role = orgRole === 'admin' ? "Admin" : "Member"
+
+    return (
+        <div className="border-black border-2 p-1 flex items-center gap-1 hover:cursor-pointer">
+            <div className="labels flex flex-col items-center h-8">
+                <label className="text-xs font-semibold">{name}</label>
+                <label className="text-xs">{role}</label>
+            </div>
+            <UserButton afterSignOutUrl="/login" 
+                appearance={{
+                    elements: {
+                        userButtonTrigger: ''
+                    } 
+                }}
+            />
+        </div>
+    )
+}
