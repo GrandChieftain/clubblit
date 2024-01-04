@@ -1,22 +1,90 @@
-import { clerkClient } from "@clerk/nextjs";
+import { auth, clerkClient, isClerkAPIResponseError } from "@clerk/nextjs";
+import prisma from "@/lib/db";
 import { NextResponse } from "next/server";
 import { z } from "zod"; 
+import CustomError from "@/lib/error";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import { Organization } from "@clerk/nextjs/dist/types/server";
+
+interface Creator{
+    name: string,
+    emailAddress: string
+}
+
+export interface Duplicate{
+    members_count: number|undefined,
+    creator?: Creator,
+    createdAt: Date
+}
+
+export async function GET(request: Request){    
+    try{
+        const { searchParams } = new URL(request.url);
+        const airtableId = searchParams.get('airtableId') as string;
+        const duplicates = await prisma.club.findMany({
+            select: { id: true, organizationId: true, createdAt: true },
+            where: { airtableId: airtableId }
+        });
+        const data: Duplicate[] = []
+        for (const { id, organizationId, createdAt } of duplicates){
+            let createdBy: string | undefined = undefined;
+            let members_count: number | undefined = undefined;
+            try{
+                const organization = await clerkClient.organizations.getOrganization({organizationId: organizationId});
+                createdBy = organization.createdBy;
+                members_count = organization.members_count;
+                if (members_count === 0){
+                    await clerkClient.organizations.deleteOrganization(organizationId)
+                    throw new Error("The creator must've deleted their account, so this organization was empty. Delete it from the database.")
+                }
+            }
+            catch(error){
+                try{
+                    await prisma.club.delete({
+                        where: { id: id }
+                    })
+                }
+                catch(error){
+                    console.error(error)
+                    return new NextResponse("Error deleting from database.", { status: 500 })
+                }
+            }
+            let creator: Creator | undefined = undefined;
+            if (createdBy){
+                try{
+                    const { firstName, lastName, emailAddresses } = await clerkClient.users.getUser(createdBy);
+                    creator = {
+                        name: firstName + ' ' + lastName,
+                        emailAddress: emailAddresses[0].emailAddress
+                    }
+                }
+                catch{}
+            }
+            data.push({
+                members_count: members_count,
+                creator: creator,
+                createdAt: createdAt
+            })
+        }
+        return NextResponse.json({response: data}, {status: 200})
+    }
+    catch(error){
+        console.error(error)
+        if (error instanceof PrismaClientKnownRequestError){
+            return new NextResponse("Error querying database.", { status: 500 })
+        }
+        return new NextResponse("Error searching for duplicate organizations.", { status: 500 })
+    }
+}
 
 export async function POST(request: Request){
-    const genres = ["Academic & Pre-Professional", "College Life", 
-        "Creative & Performing Arts", "Cultural & Racial Initiatives", 
-        "Gender & Sexuality", "Government & Politics", "Health & Wellness", 
-        "Hobbies & Special Interests", "Media & Publications", 
-        "Peer Counseling & Peer Education", "Public Service", 
-        "Women’s Initiatives", "Religious & Spiritual"] as const
-
     const GroupSchema = z.object({
-        id: z.string(),
-        name: z.string(),
         acronym: z.string().max(20, {
             message: "Alright, that's not an acronym."
         }).or(z.literal("")),
-        contactEmail: z.string().email().max(254, {
+        contactEmail: z.string().email({
+            message: "Invalid"
+        }).max(254, {
             message: 'Way too long. Try something else.'
         }),
         website: z.string().url({
@@ -24,32 +92,46 @@ export async function POST(request: Request){
         }).max(253, {
             message: "You're going to have to shorten that URL."
         }).or(z.literal("")),
-        genre: z.enum(genres)
+        club: z.object({
+            name: z.string(),
+            airtableId: z.string().optional()
+        })
     })
 
     type GroupForm = z.infer<typeof GroupSchema>;
 
     try{
         const formValues: GroupForm = await request.json();
-        const {id, name, acronym, contactEmail, website, genre}: GroupForm = GroupSchema.parse(formValues);
+        const {acronym, contactEmail, website, club}: GroupForm = GroupSchema.parse(formValues);
+        const { orgId } = await auth();
         
         if (acronym.length > 0){
-            const updateName = await clerkClient.organizations.updateOrganization(id, {name: acronym})
+            await clerkClient.organizations.updateOrganization(orgId!, {name: acronym})
         }
         else{
-            const updateName = await clerkClient.organizations.updateOrganization(id, {name: name})
+            await clerkClient.organizations.updateOrganization(orgId!, {name: club.name})
         }
         
-        const updateMetadata = await clerkClient.organizations.updateOrganizationMetadata(id, {
-            privateMetadata:{
-                status: "pending"
-            },
+        if (club.airtableId) {
+            await clerkClient.organizations.updateOrganizationMetadata(orgId!, {
+                privateMetadata:{
+                    airtableId: club.airtableId
+                },
+            })
+            await prisma.club.create({
+                data: {
+                    airtableId: club.airtableId,
+                    organizationId: orgId!
+                }
+            })
+        }
+
+        await clerkClient.organizations.updateOrganizationMetadata(orgId!, {
             publicMetadata:{
-                name: name,
+                name: club.name,
                 acronym: acronym,
                 contactEmail: contactEmail,
-                website: website,
-                genre: genre
+                website: website
             }
         })
 
@@ -77,10 +159,10 @@ export async function PATCH(request: Request){
             const officerId = updateDict[organizationId][1];
             if (status){
                 if (status == "deleted"){
-                    const deleteOrganization = await clerkClient.organizations.deleteOrganization(organizationId)
+                    await clerkClient.organizations.deleteOrganization(organizationId)
                 }
                 else if (officerId){
-                    const updateMetadata = await clerkClient.organizations.updateOrganizationMetadata(organizationId, {
+                    await clerkClient.organizations.updateOrganizationMetadata(organizationId, {
                         privateMetadata:{
                             status: status,
                             officerId: officerId
@@ -88,7 +170,7 @@ export async function PATCH(request: Request){
                     })
                 }
                 else{
-                    const updateMetadata = await clerkClient.organizations.updateOrganizationMetadata(organizationId, {
+                    await clerkClient.organizations.updateOrganizationMetadata(organizationId, {
                         privateMetadata:{
                             status: status
                         }
@@ -96,7 +178,7 @@ export async function PATCH(request: Request){
                 }
             }
             else if (officerId){
-                const updateMetadata = await clerkClient.organizations.updateOrganizationMetadata(organizationId, {
+                await clerkClient.organizations.updateOrganizationMetadata(organizationId, {
                     privateMetadata:{
                         officerId: officerId
                     }
@@ -111,4 +193,19 @@ export async function PATCH(request: Request){
         }
         return new NextResponse("Changes failed to save.", { status: 500 })
     }   
+}
+
+export async function DELETE(){
+    try{
+        const { orgId, orgRole } = await auth();
+        const { adminDeleteEnabled } = await clerkClient.organizations.getOrganization({organizationId: orgId!});
+        if (orgRole != "admin" || !adminDeleteEnabled){
+            throw new Error("User not authorized to delete organization.")
+        };
+        await clerkClient.organizations.deleteOrganization(orgId!);
+        return new NextResponse("Organization successfully deleted.", { status: 200 })
+    }
+    catch(error){
+        return new NextResponse("Failed to delete organization.", { status: 500 })
+    }
 }

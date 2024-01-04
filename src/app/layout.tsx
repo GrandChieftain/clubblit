@@ -1,6 +1,6 @@
 import './globals.css'
 import { Inter } from 'next/font/google'
-import { ClerkProvider } from '@clerk/nextjs'
+import { ClerkProvider, isClerkAPIResponseError } from '@clerk/nextjs'
 import { Toaster } from "react-hot-toast";
 import { ThemeProvider } from '@/context/ThemeProvider';
 import { ReactQueryProvider } from '@/context/ReactQueryProvider';
@@ -15,17 +15,17 @@ export const metadata = {
 
 export default function RootLayout({children}: {children: React.ReactNode}) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <ThemeProvider attribute="class">
-        <ReactQueryProvider>
-          <ClerkProvider>
-            <body className={inter.className}>
-                <Toaster position="top-right" reverseOrder={false} />
-                <main>{children}</main>
-            </body>
-          </ClerkProvider>
-        </ReactQueryProvider>
-      </ThemeProvider>
-    </html>
+    <ClerkProvider>
+      <html lang="en">
+          <body className={inter.className}>
+            <ThemeProvider attribute="class">
+              <ReactQueryProvider>
+                  <Toaster position="top-right" reverseOrder={false} />
+                  <main>{children}</main>
+              </ReactQueryProvider>
+            </ThemeProvider>
+          </body>
+      </html>
+    </ClerkProvider>
   )
 }

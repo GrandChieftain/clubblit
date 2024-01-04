@@ -97,8 +97,8 @@ export const columns: ColumnDef<Organization>[] = [
     cell: ({ row }) => {
       const name = row.getValue("name") as string
       return (
-        <TooltipProvider align="start" alignOffset={-12.5}>
-          <div className="w-[175px] truncate text-start">{name}</div>
+        <TooltipProvider isButton align="start" alignOffset={-12.5}>
+          <Button className="w-[175px] truncate text-start">{name}</Button>
           <p>{name}</p>
         </TooltipProvider>
       )
@@ -107,7 +107,7 @@ export const columns: ColumnDef<Organization>[] = [
   {
     accessorKey: "status",
     header: () => (
-      <TooltipProvider>
+      <TooltipProvider isButton>
         <Button variant="ghost">
           Status
           <HelpCircle className="w-4 h-4 ml-2" />
@@ -149,7 +149,7 @@ export const columns: ColumnDef<Organization>[] = [
   {
     accessorKey: "owner",
     header: () => (
-      <TooltipProvider>
+      <TooltipProvider isButton>
         <Button variant="ghost">
           Owner
           <HelpCircle className="w-4 h-4 ml-2" />

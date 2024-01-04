@@ -1,5 +1,4 @@
-import Checklist from "@/components/legacy/Checklist";
-import EventsCalendar from "@/components/EventsCalendar";
+import EventsCalendar from "@/components/calendar/EventsCalendar";
 import Navbar from "@/components/navigation/Navbar";
 import { auth } from "@clerk/nextjs";
 import finId from "../data/FinanceTeamId"
@@ -7,8 +6,9 @@ import GroupList from "@/components/tables/groups/GroupList";
 import { Suspense } from "react";
 import OfficerIntro from "@/components/club/OfficerIntro";
 import { cn } from "@/lib/utils";
-import GrantForm from "@/components/forms/GrantForm";
-import FormResults from "@/components/FormResults";
+import FormResults from "@/components/forms/FormResults";
+import FundingApp from "@/components/club/FundingApp";
+import ClubCombobox from "@/components/forms/ClubForm";
 
 export default async function Home() {
   
@@ -35,16 +35,19 @@ export default async function Home() {
               <div className="flex justify-center w-full">
                 <OfficerIntro />
               </div>
-              <div className="w-full overflow-hidden h-[calc(532px-24px+2px)] border-[1px] border-solid border-[#ccc]">
-                <EventsCalendar className="h-[532px]" />
+              <div className="box-border w-full p-1 bg-white dark:bg-[#19191A] border-[1px] border-[#E4E4E7] dark:border-[#515152] rounded-md">
+                <EventsCalendar />
               </div>
             </div>,
-            <div className="h-[calc(100vh-56px-30px)] overflow-hidden mt-[15px]">
-              <GrantForm className="w-[720px] h-[calc(100vh-56px-30px+24px)]" />
+            <div className="flex flex-col items-center gap-[15px] mt-[15px] w-[720px]">
+              <div className="w-full h-64 bg-white">Announcements & Messages </div>
+              <FundingApp type="semester" />
+              <FundingApp type="month" />
+              <FundingApp type="receipt" />
             </div>
           ]
         }
-      </div> 
+      </div>
     </div> 
   )
 }

@@ -137,7 +137,7 @@ export function DataTable<TData, TValue>({
   const { userId, orgRole } = useAuth();
   const [filtered, setFiltered] = React.useState(false)
 
-  const { mutate, isLoading } = useMutation({
+  const { mutate, isPending: isLoading } = useMutation({
     mutationFn: async (updateDict: UpdateDictionary) => {
       const { data } = await axios.patch('/api/group', updateDict);
       return data as string
@@ -174,6 +174,9 @@ export function DataTable<TData, TValue>({
   }
   else if (mounted){
     tableRef.current!.oncontextmenu = null
+  }
+  else{
+    return null
   }
 
   const official = <Badge className="bg-[#00FF00] hover:bg-[#00FF00]/80 text-black font-medium group-hover:bg-[#00FF00]/80">Official</Badge>;

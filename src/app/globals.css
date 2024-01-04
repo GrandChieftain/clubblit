@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -16,6 +18,82 @@
     font-size: 0.8125rem;
     display: block;
     margin-top: 8px;
+}
+
+.cl-formFieldLabel.cl-formFieldLabel__emailAddress.cl-required.cl-internal-1xpzc82{
+    visibility: hidden;
+}
+
+.cl-formFieldLabel.cl-formFieldLabel__emailAddress.cl-required.cl-internal-1xpzc82::before{
+    content: "College email";
+    color: black;
+    font-family: inherit;
+    font-weight: 500;
+    font-size: 0.8125rem;
+    line-height: 1.375;
+    display: flex;
+    -webkit-box-align: center;
+    align-items: center;
+    -webkit-font-smoothing: auto !important;
+    visibility: visible;
+}
+
+.cl-formFieldLabel.cl-formFieldLabel__identifier.cl-required.cl-internal-1xpzc82{
+    visibility: hidden;
+}
+
+.cl-formFieldLabel.cl-formFieldLabel__identifier.cl-required.cl-internal-1xpzc82::before{
+  content: "College email or username";
+  color: black;
+  font-family: inherit;
+  font-weight: 500;
+  font-size: 0.8125rem;
+  line-height: 1.375;
+  display: flex;
+  -webkit-box-align: center;
+  align-items: center;
+  -webkit-font-smoothing: auto !important;
+  visibility: visible;
+}
+
+body > main > div > div > div.flex.flex-col.items-center.mt-\[15px\].gap-\[15px\].w-\[720px\].justify-self-end > div.box-border.w-full.p-1.bg-white.dark\:bg-\[\#19191A\].border-\[1px\].border-\[\#E4E4E7\].dark\:border-\[\#515152\].rounded-md > div.fc.fc-media-screen.fc-direction-ltr.fc-theme-standard > div.fc-header-toolbar.fc-toolbar{
+    position: relative
+}
+
+body > main > div > div > div.flex.flex-col.items-center.mt-\[15px\].gap-\[15px\].w-\[720px\].justify-self-end > div.box-border.w-full.p-1.bg-white.dark\:bg-\[\#19191A\].border-\[1px\].border-\[\#E4E4E7\].dark\:border-\[\#515152\].rounded-md > div.fc.fc-media-screen.fc-direction-ltr.fc-theme-standard > div.fc-header-toolbar.fc-toolbar > div:nth-child(1){
+    position: absolute;
+    left: 50%;
+    transform: translateX(-30%);
+}
+
+body > main > div > div > div.flex.flex-col.items-center.mt-\[15px\].gap-\[15px\].w-\[720px\].justify-self-end > div.box-border.w-full.p-1.bg-white.dark\:bg-\[\#19191A\].border-\[1px\].border-\[\#E4E4E7\].dark\:border-\[\#515152\].rounded-md > div.absolute.z-10 > button{
+    font-size: 1em;
+    font-weight: 400;
+    line-height: 1.5;
+    padding: 0.4em 0.65em;
+    text-align: center;
+    user-select: none;
+    vertical-align: middle;
+}
+
+html.dark .fc-theme-standard .fc-list-day-cushion{
+    background-color: hsl(var(--background))
+}
+
+body > main > div > div > div.flex.flex-col.items-center.mt-\[15px\].gap-\[15px\].w-\[720px\].justify-self-end > div.box-border.w-full.p-1.bg-white.dark\:bg-\[\#19191A\].border-\[1px\].border-\[\#E4E4E7\].dark\:border-\[\#515152\].rounded-md > div.fc.fc-media-screen.fc-direction-ltr.fc-theme-standard > div.fc-view-harness.fc-view-harness-active > div > table > tbody > tr > td > div > div > div > table > tbody > tr > td.fc-day.fc-daygrid-day > div > div.fc-daygrid-day-events > div.fc-daygrid-event-harness > a > div > button{
+    width: 100%
+}
+
+html.dark .fc .fc-list-event:hover td{
+  background-color: hsl(var(--muted) / 0.5)
+}
+
+.fc {
+  font-family: 'Inter', sans-serif;
+}
+
+.fc .fc-event-main > button:hover {
+  background-color: hsla(0, 0%, 0%, 10%)
 }
  
 @layer base {

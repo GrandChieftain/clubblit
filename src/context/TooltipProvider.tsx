@@ -1,6 +1,6 @@
 "use client"
 
-import { ReactNode } from "react"
+import { ReactNode, useEffect, useState } from "react"
 import {
     Tooltip,
     TooltipContent,
@@ -10,15 +10,20 @@ import {
 
 interface ProviderProps extends React.ComponentProps<typeof TooltipContent> {
     children: ReactNode[],
-    displayContent?: boolean
+    displayContent?: boolean,
+    isButton?: boolean
 }
 
-export default function TooltipProvider({children, displayContent, ...props}: ProviderProps){
+export default function TooltipProvider({children, displayContent, isButton, ...props}: ProviderProps){
+    const [mounted, setMounted] = useState(false)
+    useEffect(() => setMounted(true), [])
+    if (!mounted) return <>{children}</>
+
     if (typeof displayContent === 'boolean'){
         return (
             <TooltipContext>
                 <Tooltip>
-                    <TooltipTrigger>
+                    <TooltipTrigger asChild={isButton}>
                         {children[0]}
                     </TooltipTrigger>
                     {displayContent && <TooltipContent {...props}>
