@@ -11,25 +11,25 @@ export default async function OfficialStatus(){
             organizationId
         });
         const status = organization.privateMetadata.status as string | undefined
-        if (status == "pending"){
+        if (status === "pending"){
             return (
-                <TooltipProvider>
+                <TooltipProvider isButton>
                     <Circle strokeWidth={1} size={12} fill="#FFFF00" stroke="#FFFF00" />
                     <p>Pending</p>
                 </TooltipProvider>
             )
         } 
-        else if (status == "official"){
+        else if (status === "official"){
             return (
-                <TooltipProvider>
+                <TooltipProvider isButton>
                     <Circle strokeWidth={1} size={12} fill="#00FF00" stroke="#00FF00" />
                     <p>Official</p>
                 </TooltipProvider>
             )
         } 
-        else if (status == "denied"){
+        else if (status === "denied"){
             return (
-                <TooltipProvider>
+                <TooltipProvider isButton>
                     <Circle strokeWidth={1} size={12} fill="#FF0000" stroke="#FF0000" />
                     <p>Denied</p>
                 </TooltipProvider>

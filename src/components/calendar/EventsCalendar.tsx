@@ -9,8 +9,8 @@ export default async function EventsCalendar(){
     // Fetch calendar events
     const events = await calendar.events.list({
         calendarId: 'c_d15402dc8e169148b94c41e45e2c62a5d9a54f6b8cd3bd15ca07337bf0025570@group.calendar.google.com', // Change to your calendar ID
-        timeMin: '2023-01-01T00:00:00Z', // Set the start date
-        timeMax: '2023-12-31T23:59:59Z', // Set the end date
+        timeMin: '2023-08-01T00:00:00Z', // Set the start date
+        timeMax: '2024-07-31T23:59:59Z', // Set the end date
     });
 
     const googleCalendarEvents = events.data.items

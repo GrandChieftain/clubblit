@@ -19,17 +19,21 @@ import {
 } from "@/components/ui/popover"
 import { Search } from "lucide-react"
 
+import anonymous from "@/assets/anonymous.png"
+import defaultOrg from "@/assets/default_org.png"
+import { cn } from "@/lib/utils"
+
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 
 export type Organization = {
   id: string;
-  logoLink: string;
+  imageUrl: string;
   name: string;
   status: string | undefined;
   owner: {
-    profileLink: string;
-    emailAddress: string;
+    profileImageUrl: string | undefined;
+    emailAddress: string | undefined;
     profileName: string;
   };
   officerId: string | undefined
@@ -39,7 +43,6 @@ export type Organization = {
 export const columns: ColumnDef<Organization>[] = [
   {
     accessorKey: "id",
-    header: ({ column }) => column.toggleVisibility(false),
     cell: () => {},
     enableHiding: true
   },
@@ -68,8 +71,10 @@ export const columns: ColumnDef<Organization>[] = [
     accessorKey: "logoLink",
     header: "Logo",
     cell: ({ row }) => {
-      const logoLink = row.getValue("logoLink") as string
+      const logoLink = row.getValue("logoLink") as string | undefined;
+      if (logoLink)
       return <Image src={logoLink} width={33.41} height={33.41} alt="" />
+      else return <Image src={defaultOrg} width={33.41} height={33.41} alt="" />
     }
   },
   {
@@ -97,8 +102,8 @@ export const columns: ColumnDef<Organization>[] = [
     cell: ({ row }) => {
       const name = row.getValue("name") as string
       return (
-        <TooltipProvider isButton align="start" alignOffset={-12.5}>
-          <Button className="w-[175px] truncate text-start">{name}</Button>
+        <TooltipProvider align="start" alignOffset={-12.5}>
+          <span className="w-[175px] truncate text-start inline-block">{name}</span>
           <p>{name}</p>
         </TooltipProvider>
       )
@@ -121,7 +126,6 @@ export const columns: ColumnDef<Organization>[] = [
   {
     accessorKey: "email",
     header: ({ column }) => {
-      column.toggleVisibility(false)
       /*return (
         <Button
           variant="ghost"
@@ -158,11 +162,13 @@ export const columns: ColumnDef<Organization>[] = [
       </TooltipProvider>
     ),
     cell: ({ row }) => {
-      const { profileLink, emailAddress, profileName } = row.getValue("owner") as Organization["owner"]
+      const { profileImageUrl, emailAddress, profileName } = row.getValue("owner") as Organization["owner"]
       return (
         <TooltipProvider>
-          <Image src={profileLink} width={33.41} height={33.41} alt="" />
-          <div className="indent-0"><span className="underline text-[#0079D3] dark:text-white cursor-pointer" onClick={() => window.location.href = `mailto:${emailAddress}`}>{profileName}</span></div>
+          {profileImageUrl ? <Image src={profileImageUrl} width={33.41} height={33.41} alt="" /> : <Image src={anonymous} width={33.41} height={33.41} alt="" />}
+          <div className="indent-0"><span className={cn("dark:text-white", {
+            "underline text-[#0070E0] cursor-pointer" : emailAddress
+            })} onClick={emailAddress ? () => window.location.href = `mailto:${emailAddress}` : () => null}>{profileName}</span></div>
         </TooltipProvider>
         )
     }

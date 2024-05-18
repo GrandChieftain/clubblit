@@ -9,7 +9,7 @@ import {
   } from "@/components/ui/tooltip"
 
 interface ProviderProps extends React.ComponentProps<typeof TooltipContent> {
-    children: ReactNode[],
+    children: [ReactNode, ReactNode],
     displayContent?: boolean,
     isButton?: boolean
 }
@@ -37,7 +37,7 @@ export default function TooltipProvider({children, displayContent, isButton, ...
         return (
             <TooltipContext>
                 <Tooltip>
-                    <TooltipTrigger>
+                    <TooltipTrigger asChild={isButton}>
                         {children[0]}
                     </TooltipTrigger>
                     <TooltipContent {...props}>

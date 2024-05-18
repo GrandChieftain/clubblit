@@ -14,7 +14,7 @@ export default function UnofficialStatus(){
         return null
     }
     return(
-        <TooltipProvider>
+        <TooltipProvider isButton>
             <Circle strokeWidth={1} size={12} fill={theme == "dark" ? "#515152" : "#C2C2C2"} stroke={theme == "dark" ? "#515152" : "#C2C2C2"} />
             <p>Unofficial</p>
         </TooltipProvider>

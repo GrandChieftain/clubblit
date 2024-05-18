@@ -1,6 +1,6 @@
 import './globals.css'
 import { Inter } from 'next/font/google'
-import { ClerkProvider, isClerkAPIResponseError } from '@clerk/nextjs'
+import { ClerkProvider } from '@clerk/nextjs'
 import { Toaster } from "react-hot-toast";
 import { ThemeProvider } from '@/context/ThemeProvider';
 import { ReactQueryProvider } from '@/context/ReactQueryProvider';

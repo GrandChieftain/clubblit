@@ -51,6 +51,7 @@ import {
   } from "@/components/ui/alert-dialog"
 import Link from "next/link";
 import { Duplicate } from "@/app/api/group/route";
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
   
 
 export const GroupSchema = z.object({
@@ -77,7 +78,6 @@ export type GroupForm = z.infer<typeof GroupSchema>;
 
 export default function GroupForm({className, clubs}: {className?: string, clubs: {name: string, airtableId: string}[]}){
     const { organization } = useOrganization();
-    const orgId = organization?.id;
     const orgName = organization?.name;
 
     const { sessionId } = useAuth();
@@ -93,9 +93,10 @@ export default function GroupForm({className, clubs}: {className?: string, clubs
         resolver: zodResolver(GroupSchema),
         defaultValues: defaultValues,
     })
+    //const [isSubmitting, setIsSubmitting] = useState(false);
     const { formState: { isSubmitting } } = form
 
-    const { mutate, isSuccess } = useMutation({
+    const { mutate, isSuccess, isPending: isLoading } = useMutation({
         mutationFn: async (values: GroupForm) => await axios.post('/api/group', values),
         onSuccess: () => {
             toast.success("Success. Thank you so much!");
@@ -106,51 +107,50 @@ export default function GroupForm({className, clubs}: {className?: string, clubs
         }
     })
 
-    useEffect(() => form.reset(defaultValues), [orgId])
+    const { watch } = form;
 
     const [open, setOpen] = useState(false);
-    
-    // MUST USE REFETCH INSIDE ONSUBMIT, DECIDE WHETHER TO DO OTHER FETCHES
 
-    const cachedClub: GroupForm["club"] = useMemo(() => form.watch("club"), [form.watch("club")]);
-    const { refetch } = useQuery({
-        enabled: !!cachedClub,
+    const currentClub = watch("club");
+    const cachedClub: GroupForm["club"] = useMemo(() => currentClub, [currentClub]);
+    const { data: duplicates, refetch } = useQuery({
+        enabled: false,
         queryKey: ['duplicates', cachedClub],
         queryFn: async () => {
-            const { data } = await axios.get('/api/group', {
+            const { data: { response } } = await axios.get('/api/group', {
                 params: { 
                     airtableId: form.getValues("club.airtableId")
                 }
             });
-            return data as Duplicate[]
+            return response as Duplicate[]
         }
     });
 
-    const cancelRef = useRef<HTMLButtonElement|null>(null);
-    const continueRef = useRef<HTMLButtonElement|null>(null);
+    const duplicatesTable = <Table>
+    <TableCaption>There {duplicates?.length === 1 ? "is 1 instance" : `are ${duplicates?.length} instances`} of the {form.getValues("club.name")} already registered on our server.</TableCaption>
+    <TableHeader>
+      <TableRow>
+        <TableHead className="text-center">Creator</TableHead>
+        <TableHead className="text-center">Date</TableHead>
+        <TableHead className="text-center">Members</TableHead>
+      </TableRow>
+    </TableHeader>
+    <TableBody>
+      {duplicates?.map((duplicate, index) => <TableRow key={index}>
+        <TableCell className="font-medium text-center">{duplicate.creator ? <a href={`mailto:${duplicate.creator.emailAddress}`} className="text-[#0070E0] underline">{duplicate.creator.name}</a> : "User not found"}</TableCell>
+        <TableCell className="text-center">{(new Date(duplicate.createdAt)).toLocaleDateString('en-US', {month: 'long', day: 'numeric', year: 'numeric'})}</TableCell>
+        <TableCell className="text-center">{duplicate.members_count ?? "N/A"}</TableCell>
+      </TableRow>)}
+    </TableBody>
+  </Table>
 
     const onSubmit = async (values: GroupForm) => {
-        const { data: duplicates, isSuccess } = await refetch();
+        const { data: duplicates, isSuccess, isError } = await refetch();
         if (isSuccess && duplicates.length > 0){
             setOpen(true);
-            // SHOW ALERT, CONTINUE WILL HANDLE MUTATION
-            await new Promise((resolve, reject) => {
-                const onContinue = () => {
-                    resolve("Continue");
-                    cleanUp();
-                }
-                const onCancel = () => {
-                    reject("Cancel");
-                    cleanUp();
-                }
-                const cleanUp = () => {
-                    continueRef.current?.removeEventListener("click", onContinue);
-                    cancelRef.current?.removeEventListener("click", onCancel);
-                    setOpen(false);
-                }
-                continueRef.current?.addEventListener("click", onContinue)
-                cancelRef.current?.addEventListener("click", onCancel);
-            }).then(() => mutate(values))
+        }
+        else if (isError){
+            toast.error("Form submission failed. Please try again.")
         }
         else{
             mutate(values)
@@ -180,7 +180,7 @@ export default function GroupForm({className, clubs}: {className?: string, clubs
     }
 
     return (
-        <Card className={className + " bg-white dark:bg-[#19191A]"}>
+        <Card className={cn("dark:bg-[#19191A] border-[#E4E4E7] dark:border-[#515152]", className)}>
             <CardHeader>
                 <CardTitle>Additional Information</CardTitle>
                 <CardDescription>We need to know a little more to confirm your status as an official student organization at Harvard.</CardDescription>
@@ -196,7 +196,7 @@ export default function GroupForm({className, clubs}: {className?: string, clubs
                                     <FormLabel>
                                         Organization {form.formState.errors.club && ("- " + form.formState.errors.club?.message)}
                                         <FormDescription className="font-normal">
-                                            Look for its official name as registered under SOCO. If not found, contact the <Link href="mailto:treasurer@thehua.org" className="text-[#0079D3] underline">HUA treasurers</Link>.
+                                            Look for its official name as registered under SOCO. If not found, contact the <Link href="mailto:treasurer@thehua.org" className="text-[#0070E0] underline">HUA treasurers</Link>.
                                         </FormDescription>
                                     </FormLabel>
                                     <Popover>
@@ -330,29 +330,28 @@ export default function GroupForm({className, clubs}: {className?: string, clubs
                             <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                             Deleting
                         </Button>
-                        <Button type="submit" variant="default" disabled={isSuccess ? true : false} className={cn('ml-auto', {
-                            'hidden': isSubmitting,
+                        <Button type="submit" variant="default" disabled={isSuccess} className={cn('ml-auto', {
+                            'hidden': isSubmitting || isLoading || open,
                         })}>Submit</Button>
                         <Button disabled className={cn('ml-auto', {
-                            'hidden': !isSubmitting,
+                            'hidden': !isSubmitting && !isLoading && !open,
                         })}>
                             <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                             Submitting
                         </Button>
                         <AlertDialog open={open} onOpenChange={setOpen}>
-                            <AlertDialogTrigger />
                             <AlertDialogContent>
                                 <AlertDialogHeader>
-                                    <AlertDialogTitle>
-                                        Are you sure about returning to the home page?
+                                    <AlertDialogTitle className="text-center">
+                                        Would you still like to proceed?
                                     </AlertDialogTitle>
                                     <AlertDialogDescription>
-                                        {orgName ? `This action will delete ${orgName} from our servers. Rest assured, you can always try registering an organization at a different time.` : "This action will delete your organization from our servers. Rest assured, you can always try registering another organization at a different time."}
+                                        {duplicatesTable}
                                     </AlertDialogDescription>
                                 </AlertDialogHeader>
                                 <AlertDialogFooter>
-                                    <AlertDialogCancel ref={cancelRef}>Cancel</AlertDialogCancel>
-                                    <AlertDialogAction ref={continueRef}>Continue</AlertDialogAction>
+                                    <AlertDialogCancel onClick={() => setOpen(false)}>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction onClick={() => [mutate(form.getValues()), setOpen(false)]}>Continue</AlertDialogAction>
                                 </AlertDialogFooter>
                             </AlertDialogContent>
                         </AlertDialog>

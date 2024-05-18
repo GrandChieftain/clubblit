@@ -1,10 +1,8 @@
-import { auth, clerkClient, isClerkAPIResponseError } from "@clerk/nextjs";
+import { auth, clerkClient } from "@clerk/nextjs";
 import prisma from "@/lib/db";
 import { NextResponse } from "next/server";
 import { z } from "zod"; 
-import CustomError from "@/lib/error";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
-import { Organization } from "@clerk/nextjs/dist/types/server";
 
 interface Creator{
     name: string,
@@ -30,13 +28,13 @@ export async function GET(request: Request){
             let createdBy: string | undefined = undefined;
             let members_count: number | undefined = undefined;
             try{
-                const organization = await clerkClient.organizations.getOrganization({organizationId: organizationId});
-                createdBy = organization.createdBy;
+                const organization = (await clerkClient.organizations.getOrganizationList({query: organizationId, includeMembersCount: true}))[0];
                 members_count = organization.members_count;
                 if (members_count === 0){
-                    await clerkClient.organizations.deleteOrganization(organizationId)
+                    await clerkClient.organizations.deleteOrganization(organizationId);
                     throw new Error("The creator must've deleted their account, so this organization was empty. Delete it from the database.")
                 }
+                createdBy = organization.createdBy;
             }
             catch(error){
                 try{
@@ -45,7 +43,6 @@ export async function GET(request: Request){
                     })
                 }
                 catch(error){
-                    console.error(error)
                     return new NextResponse("Error deleting from database.", { status: 500 })
                 }
             }
@@ -59,17 +56,16 @@ export async function GET(request: Request){
                     }
                 }
                 catch{}
+                data.push({
+                    members_count,
+                    creator,
+                    createdAt
+                })
             }
-            data.push({
-                members_count: members_count,
-                creator: creator,
-                createdAt: createdAt
-            })
         }
-        return NextResponse.json({response: data}, {status: 200})
+        return NextResponse.json({ response: data }, { status: 200 })
     }
     catch(error){
-        console.error(error)
         if (error instanceof PrismaClientKnownRequestError){
             return new NextResponse("Error querying database.", { status: 500 })
         }
@@ -114,8 +110,9 @@ export async function POST(request: Request){
         
         if (club.airtableId) {
             await clerkClient.organizations.updateOrganizationMetadata(orgId!, {
-                privateMetadata:{
-                    airtableId: club.airtableId
+                privateMetadata: {
+                    airtableId: club.airtableId,
+                    status: "pending"
                 },
             })
             await prisma.club.create({
@@ -129,9 +126,9 @@ export async function POST(request: Request){
         await clerkClient.organizations.updateOrganizationMetadata(orgId!, {
             publicMetadata:{
                 name: club.name,
-                acronym: acronym,
-                contactEmail: contactEmail,
-                website: website
+                acronym,
+                contactEmail,
+                website
             }
         })
 
@@ -164,15 +161,15 @@ export async function PATCH(request: Request){
                 else if (officerId){
                     await clerkClient.organizations.updateOrganizationMetadata(organizationId, {
                         privateMetadata:{
-                            status: status,
-                            officerId: officerId
+                            status,
+                            officerId
                         }
                     })
                 }
                 else{
                     await clerkClient.organizations.updateOrganizationMetadata(organizationId, {
                         privateMetadata:{
-                            status: status
+                            status
                         }
                     })
                 }
@@ -180,12 +177,12 @@ export async function PATCH(request: Request){
             else if (officerId){
                 await clerkClient.organizations.updateOrganizationMetadata(organizationId, {
                     privateMetadata:{
-                        officerId: officerId
+                        officerId
                     }
                 })
             }
         }
-        return NextResponse.json({response: validatedDict}, { status: 200 })
+        return NextResponse.json({ response: validatedDict }, { status: 200 })
     }
     catch(error){
         if (error instanceof z.ZodError) {

@@ -1,0 +1,24 @@
+@import "~stream-chat-react/dist/css/index.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.str-chat{
+    height: calc(100vh - 56px)
+}
+
+@layer base {
+    :root {
+        --border: 240 5.9% 90%;
+    }
+    .dark {
+        --border: 240 3.7% 15.9%;
+    }
+}
+
+@layer base {
+    * {
+      @apply border-border;
+    }
+}

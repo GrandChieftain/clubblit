@@ -7,18 +7,23 @@ export default async function Create(){
     if (!orgId){
         redirect("/")
     }
-    const organization = await clerkClient.organizations.getOrganization({
-        organizationId: orgId
-      });
-    const airtableId = organization.privateMetadata.airtableId as string | undefined
-    if (airtableId){
+    try{
+        const organization = await clerkClient.organizations.getOrganization({
+            organizationId: orgId
+        });
+        const airtableId = organization.privateMetadata.airtableId as string | undefined
+        if (airtableId){
+            redirect("/")
+        }
+        else{
+            return (
+                <div className="flex items-center justify-center bg-[#DAE0E6] dark:bg-background h-screen">
+                    <ClubForm className="w-2/4" />
+                </div>
+            )
+        }
+    }
+    catch{
         redirect("/")
-    }
-    else{
-        return (
-            <div className="flex items-center justify-center bg-[#DAE0E6] dark:bg-background h-screen">
-                <ClubForm className="w-2/4" />
-            </div>
-        )
-    }
+    }   
 }
