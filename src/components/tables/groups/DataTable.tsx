@@ -121,7 +121,7 @@ export function DataTable<TData, TValue>({
     x: 0,
     y: 0,
   }
-  const [ contextMenu, setContextMenu ] = React.useState(initialContextMenu)
+  const [contextMenu, setContextMenu] = React.useState(initialContextMenu)
   function handleContextMenu(e: MouseEvent){
     e.preventDefault();
     const { pageX, pageY } = e;
@@ -280,7 +280,7 @@ export function DataTable<TData, TValue>({
 
   React.useEffect(() => {
     table.setColumnVisibility({ id: false, email: false });
-  }, []);
+  }, [table]);
 
   if (!mounted) return null;
   

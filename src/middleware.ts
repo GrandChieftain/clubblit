@@ -1,4 +1,4 @@
-import { authMiddleware, clerkClient, currentUser, redirectToSignIn } from "@clerk/nextjs";
+import { authMiddleware, clerkClient, redirectToSignIn } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 
 const main = ["/", "/chat"]

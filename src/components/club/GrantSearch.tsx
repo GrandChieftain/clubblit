@@ -1,7 +1,5 @@
 "use client"
 
-import useGrant from "@/hooks/useGrant"
-import { useTheme } from "next-themes";
 import { useState } from "react";
 import { Alert, AlertTitle } from "../ui/alert";
 import { MonthlyGrantParams, SemesterlyGrantParams, months } from "@/lib/airtable";
@@ -16,7 +14,7 @@ export const defaultValues = {
 }
 
 export default function GrantSearch(){
-    const [ params, setParams ] = useState<Partial<SemesterlyGrantParams | MonthlyGrantParams>>(defaultValues);
+    const [params, setParams] = useState<Partial<SemesterlyGrantParams | MonthlyGrantParams>>(defaultValues);
 
     // WHEN TYPE CHANGES, CLEARS; PERIOD DEPENDS ON TYPE
     // 1ST COL, ONCHANGE CLEAR 2ND, ONLY RENDER DATA WHEN 2ND DEFINED
@@ -62,7 +60,7 @@ export default function GrantSearch(){
                                 </SelectGroup> :
                                 <SelectGroup>
                                     <SelectLabel>Month</SelectLabel>
-                                    {months.map((month) => <SelectItem value={month}>{month}</SelectItem>)}
+                                    {months.map((month) => <SelectItem key={month} value={month}>{month}</SelectItem>)}
                                 </SelectGroup>
                             }
                             </SelectContent>

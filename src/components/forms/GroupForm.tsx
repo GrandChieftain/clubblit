@@ -3,7 +3,7 @@
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button"
 
@@ -14,7 +14,6 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 
@@ -173,7 +172,7 @@ export default function GroupForm({className, clubs}: {className?: string, clubs
         }
     })
 
-    const [ mounted, setMounted ] = useState(false);
+    const [mounted, setMounted] = useState(false);
     useEffect(() => setMounted(true), []);
     if (!mounted){
         return null

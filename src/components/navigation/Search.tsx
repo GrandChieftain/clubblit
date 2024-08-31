@@ -24,9 +24,9 @@ export const useColorDictionary = create<ColorDictionary>()((set) => ({
 export default function Search(){
     const { resolvedTheme: theme } = useTheme();
 
-    const [ query, setQuery ] = useState("");
-    const [ deferredQuery, setDeferredQuery ] = useState(query);
-    const [ isDebouncing, setIsDebouncing ] = useState(false);
+    const [query, setQuery] = useState("");
+    const [deferredQuery, setDeferredQuery] = useState(query);
+    const [isDebouncing, setIsDebouncing] = useState(false);
 
     useEffect(() => {
         setIsDebouncing(true);
@@ -53,7 +53,7 @@ export default function Search(){
 
     const [open, setOpen] = useState(false);
 
-    const [ mounted, setMounted ] = useState(false);
+    const [mounted, setMounted] = useState(false);
     useEffect(() => setMounted(true), []);
     if (!mounted){
       return null

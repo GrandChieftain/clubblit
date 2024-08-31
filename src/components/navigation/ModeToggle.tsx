@@ -18,9 +18,9 @@ export default function ModeToggle() {
 
   const { setTheme } = useTheme();
 
-  const [ active, setActive ] = useState(true);
+  const [active, setActive] = useState(true);
   
-  const [ mounted, setMounted ] = useState(false);
+  const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
   if (!mounted){
     return null

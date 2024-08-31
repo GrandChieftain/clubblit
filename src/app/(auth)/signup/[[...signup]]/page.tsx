@@ -16,7 +16,7 @@ export default function Register(){
         
         return () => toast.dismiss(reminder)
 
-    },[]);
+    }, []);
 
     return (
         <div className="flex items-center justify-center h-screen bg-[#DAE0E6]">

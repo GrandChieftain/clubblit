@@ -1,7 +1,7 @@
 "use client"
 
 import { useTheme } from "next-themes"
-import { useState, useEffect, MouseEventHandler, useMemo } from "react";
+import { useState, useEffect, MouseEventHandler } from "react";
 
 import {
     Dialog,
@@ -12,7 +12,6 @@ import {
     DialogTitle,
     DialogTrigger,
   } from "@/components/ui/dialog"
-import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { useAuth } from "@clerk/nextjs";
@@ -28,7 +27,6 @@ import { cn } from "@/lib/utils";
 import {
     Form,
     FormControl,
-    FormDescription,
     FormField,
     FormItem,
     FormLabel,
@@ -86,7 +84,7 @@ export default function OrgSettings(){
 
     const [active, setActive] = useState(true);
 
-    const [ mounted, setMounted ] = useState(false);
+    const [mounted, setMounted] = useState(false);
     useEffect(() => setMounted(true), []);
     if (!mounted){
       return null

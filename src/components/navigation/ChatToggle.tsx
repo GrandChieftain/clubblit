@@ -7,7 +7,7 @@ import { Button } from "../ui/button";
 import { usePathname, useRouter } from "next/navigation";
 import { MessageCircle } from "lucide-react"
 import { DefaultGenerics, StreamChat, TokenOrProvider } from "stream-chat";
-import { useOrganization, useUser } from "@clerk/nextjs";
+import { useUser } from "@clerk/nextjs";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { create } from "zustand";
@@ -33,12 +33,10 @@ export default function ChatToggle(){
     const pathname = usePathname();
 
     const { client, setClient } = useClientState();
-    const [ unread, setUnread ] = useState<number | undefined>(undefined);
+    const [unread, setUnread] = useState<number | undefined>(undefined);
 
     const { user } = useUser();
-    const { organization } = useOrganization();
     const userId = user?.id;
-    const orgId = organization?.id;
     const { refetch } = useQuery({
       queryKey: ["token", userId],
       queryFn: async () => {
@@ -49,11 +47,12 @@ export default function ChatToggle(){
 
     useEffect(() => {
       if (!userId) return
+      const {id, fullName, imageUrl: image} = user;
       const init = async () => {
         const chatClient = StreamChat.getInstance(apiKey);
         const { data: response } = await refetch();
         if (response){
-          const streamUser = await chatClient.connectUser({ id: user.id, name: user.fullName as string, image: user.imageUrl }, response.token);
+          const streamUser = await chatClient.connectUser({ id, name: fullName as string, image }, response.token);
           if (streamUser) setUnread(streamUser.me?.total_unread_count);
           for (const memberId of response.financeTeam){
             if (memberId != userId){
@@ -71,9 +70,9 @@ export default function ChatToggle(){
           setClient(null);
         }
       };
-    }, [userId])
+    }, [userId, client, refetch, setClient, user])
 
-    const [ mounted, setMounted ] = useState(false);
+    const [mounted, setMounted] = useState(false);
     useEffect(() => setMounted(true), []);
     if (!mounted){
       return null

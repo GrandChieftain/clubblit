@@ -2,11 +2,10 @@
 
 import useGrant from "@/hooks/useGrant"
 import { MonthlyGrantParams, SemesterlyGrantParams } from "@/lib/airtable"
-import { memo, useEffect, useMemo, useState } from "react"
+import { memo, useEffect, useState } from "react"
 import ColorBadge from "./ColorBadge"
 import useReceiptLink from "@/hooks/useReceiptLink"
 import randomColor from "randomcolor"
-import { defaultValues } from "./GrantSearch"
 
 const GrantResults = memo(function GrantResults({ params }: { params: Partial<SemesterlyGrantParams | MonthlyGrantParams> }){
     const undefinedBadge = <ColorBadge color="rgb(173, 223, 255)">Undefined</ColorBadge>
@@ -19,9 +18,9 @@ const GrantResults = memo(function GrantResults({ params }: { params: Partial<Se
 
     const { setReceiptLink } = useReceiptLink();
 
-    useEffect(() => setReceiptLink(data?.receiptLink), [data])
+    useEffect(() => setReceiptLink(data?.receiptLink), [data, setReceiptLink])
 
-    const [ color ] = useState(randomColor({ luminosity: "light", format: 'rgb'}));
+    const [color] = useState(randomColor({ luminosity: "light", format: 'rgb'}));
 
     if (!params["type"] || !params["period"] || !data){
         return undefinedValues

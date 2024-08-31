@@ -1,6 +1,5 @@
 import { auth, clerkClient } from '@clerk/nextjs';
 import Airtable from 'airtable';
-import { redirect } from 'next/navigation';
 
 Airtable.configure({
     endpointUrl: 'https://api.airtable.com',

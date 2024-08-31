@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { DefaultGenerics, StreamChat, TokenOrProvider } from "stream-chat"
 import {
     Chat,
     Channel,
@@ -15,9 +14,7 @@ import {
 } from "stream-chat-react"
 import "./styles.css"
 
-import { useAuth, useOrganization, useUser } from "@clerk/nextjs"
-import { useQuery } from "@tanstack/react-query"
-import axios from "axios"
+import { useAuth } from "@clerk/nextjs"
 import { useTheme } from "next-themes"
 import { useClientState } from "@/components/navigation/ChatToggle"
 
@@ -27,7 +24,7 @@ export default function Messenger(){
     const { userId } = useAuth();
 
     const [mounted, setMounted] = useState(false);
-    useEffect(() => setMounted(true));
+    useEffect(() => setMounted(true), [setMounted]);
 
     const { client } = useClientState();
 
