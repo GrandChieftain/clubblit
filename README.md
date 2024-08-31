@@ -1,6 +1,25 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+## Welcome
+Thank you so much for taking a look through the club funding portal I worked on for the HUA. I would've created an updated video for the latest version V2, but I've since left my position in the HUA and lost access to the Airtable database for the club funding process. Hence, all the components that relied on it are now incomplete: club registration, organization search, funding tracker status, application links, and even the calendar (which fetched events from the HUA Finance Team's Google Calendar). Nevertheless, I've posted my V1 video below that goes through most of the fundamental features of the app and attached screenshots of what I still have access to in V2 in both light mode and dark mode. The good news is that, now that the project is deprecated, all the code is public so any technical reviewers can now see how each component works in detail. My quality of code has since increased after taking CS51 at Harvard and completing my internship at Meta. But this was an awesome learning experience for me, and thank you again!
 
-## Getting Started
+## [Video from V1 (Old)](https://www.dropbox.com/scl/fi/lpoxqcxna4nozjijw3k7c/club_funding_app.mp4?rlkey=ewu9rxum9r80rg6ls7nl4yvba&dl=0)
+Link: https://www.dropbox.com/scl/fi/lpoxqcxna4nozjijw3k7c/club_funding_app.mp4?rlkey=ewu9rxum9r80rg6ls7nl4yvba&dl=0
+
+## Screenshots from V2 (Latest)
+
+### Club View
+![image](https://github.com/user-attachments/assets/0f386f3f-726e-48fb-a8e7-689786501990)
+![image](https://github.com/user-attachments/assets/95aa653b-fdb4-4f2f-9379-d2a3f66dc1c3)
+
+### Finance Team View
+![image](https://github.com/user-attachments/assets/8d279bba-4dcc-497a-96a8-0c41acf07527)
+![image](https://github.com/user-attachments/assets/6191db9a-c370-429b-88ff-2a4ff004f5eb)
+
+### Chat View (for communications between clubs and treasurers)
+![image](https://github.com/user-attachments/assets/97c46b8c-a555-4244-8832-00b9a78206fe)
+![image](https://github.com/user-attachments/assets/5b03aade-aff8-40fe-9243-3c7ba4219eca)
+
+
+## Running the Code
 
 First, run the development server:
 
@@ -12,23 +31,4 @@ yarn dev
 pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+(If an error appears about there being no BUILD_ID, please run ```npm run build``` first)
